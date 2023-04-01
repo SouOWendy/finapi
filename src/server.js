@@ -76,7 +76,7 @@ app.post("/withdraw", checkAccountCPF, (req, res) => { // Make withdraw
   const { amount } = req.body;
   
   if (getBalance(account.statement) < amount)
-    res.status(400).json({error: "Balance is not sufficient."})
+    return res.status(400).json({error: "Balance is not sufficient."})
   
   account.statement.push({
     type: "debit",
@@ -84,7 +84,16 @@ app.post("/withdraw", checkAccountCPF, (req, res) => { // Make withdraw
     createdAt: new Date()
   });
 
-  res.status(200).send();
+  return res.status(200).send();
 })
+
+app.get("/statement/date", checkAccountCPF, (req, res) => { // Show Bank Statement by Date
+  const { account } = req;
+  const { date } = req.query;
+  
+  const statement = account.statement.filter(statement => statement.createdAt.toDateString() === new Date(date).toDateString());
+
+  return res.json(statement);
+});
 
 app.listen(3333);
