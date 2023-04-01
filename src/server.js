@@ -17,6 +17,17 @@ function checkAccountCPF(req, res, next) { // Check exists CPF in header
   return next();
 }
 
+function getBalance(statement) { // Calculate the balance
+  const total = statement.reduce((acc, currentValue) => {
+    if (currentValue.type === "credit")
+      return acc + currentValue.amount;
+    else
+      return acc - currentValue.amount;
+  }, 0);
+
+  return total;
+}
+
 app.use(express.json()); // Use JSON
 
 app.get("/accounts", (req, res) => { // List all accounts
@@ -59,5 +70,21 @@ app.post("/deposit", checkAccountCPF, (req, res) => { // Make deposit
 
   return res.status(200).send();
 });
+
+app.post("/withdraw", checkAccountCPF, (req, res) => { // Make withdraw
+  const { account } = req;
+  const { amount } = req.body;
+  
+  if (getBalance(account.statement) < amount)
+    res.status(400).json({error: "Balance is not sufficient."})
+  
+  account.statement.push({
+    type: "debit",
+    amount,
+    createdAt: new Date()
+  });
+
+  res.status(200).send();
+})
 
 app.listen(3333);
