@@ -5,7 +5,7 @@ const app = express();
 
 const accounts = []; // Structure
 
-function checkAccountCPF(req, res, next) {
+function checkAccountCPF(req, res, next) { // Check exists CPF in header
   const { cpf } = req.headers;
 
   const account = accounts.find(account => account.cpf === cpf)
@@ -19,7 +19,7 @@ function checkAccountCPF(req, res, next) {
 
 app.use(express.json()); // Use JSON
 
-app.get("/accounts", (req, res) => {
+app.get("/accounts", (req, res) => { // List all accounts
   return res.json(accounts);
 });
 
@@ -34,12 +34,16 @@ app.post("/account", (req, res) => { // Create Account
     name,
     cpf,
     id: uuidv4(),
-    created_at: new Date()
+    statement: []
   };
 
   accounts.push(account);
 
   return res.status(201).send();
+});
+
+app.get("/statement", checkAccountCPF, (req, res) => { // Search Bank Statement
+  return res.status(200).json(req.account.statement);
 });
 
 app.listen(3333);
