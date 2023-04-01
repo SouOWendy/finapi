@@ -42,8 +42,22 @@ app.post("/account", (req, res) => { // Create Account
   return res.status(201).send();
 });
 
-app.get("/statement", checkAccountCPF, (req, res) => { // Search Bank Statement
+app.get("/statement", checkAccountCPF, (req, res) => { // Show Bank Statement
   return res.status(200).json(req.account.statement);
+});
+
+app.post("/deposit", checkAccountCPF, (req, res) => { // Make deposit
+  const { account } = req;
+  const { description, amount } = req.body;
+
+  account.statement.push({
+    type: "credit",
+    description,
+    amount,
+    createdAt: new Date()
+  });
+
+  return res.status(200).send();
 });
 
 app.listen(3333);
