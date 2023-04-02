@@ -1,4 +1,5 @@
 const express = require("express");
+const { send } = require("process");
 const {v4: uuidv4} = require("uuid");
 
 const app = express();
@@ -94,6 +95,15 @@ app.get("/statement/date", checkAccountCPF, (req, res) => { // Show Bank Stateme
   const statement = account.statement.filter(statement => statement.createdAt.toDateString() === new Date(date).toDateString());
 
   return res.json(statement);
+});
+
+app.put("/account", checkAccountCPF, (req, res) => { // Update account
+  const { account } = req;
+  const { name } = req.body;
+
+  account.name = name;
+
+  return res.status(201).send();
 });
 
 app.listen(3333);
