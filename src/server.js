@@ -112,4 +112,18 @@ app.get("/account", checkAccountCPF, (req, res) => { // Show account info
   return res.json(account);  
 });
 
+app.delete("/account", checkAccountCPF, (req, res) => { // Delete accont
+  const { account } = req;
+
+  accounts.splice(account, 1);
+
+  return res.status(201).send();
+});
+
+app.get("/balance", checkAccountCPF, (req, res) => {
+  const { account } = req;
+  const balance = getBalance(account.statement);
+  return res.json({balance});
+});
+
 app.listen(3333);
