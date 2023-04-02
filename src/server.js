@@ -106,4 +106,10 @@ app.put("/account", checkAccountCPF, (req, res) => { // Update account
   return res.status(201).send();
 });
 
+app.get("/account", checkAccountCPF, (req, res) => { // Show account info
+  const { account } = req;
+
+  return res.json(account);  
+});
+
 app.listen(3333);
